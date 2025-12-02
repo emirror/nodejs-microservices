@@ -18,7 +18,7 @@ const usersSchema = new mongoose.Schema({
 const User = mongoose.model('User', usersSchema)
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello World from User Service!')
 })
 
 app.get('/users', async (req, res) => {
@@ -44,5 +44,5 @@ app.post('/users', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`user service listening on port ${port}`)
 })
