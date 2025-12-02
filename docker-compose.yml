@@ -10,6 +10,16 @@ services:
     depends_on:
       - mongo
 
+  task-service:
+    build: ./task-service
+    container_name: task-service
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/users
+    depends_on:
+      - mongo
+
   mongo:
     image: mongodb/mongodb-community-server:latest
     container_name: mongo
