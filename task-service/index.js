@@ -22,7 +22,7 @@ const Task = mongoose.model('Task', tasksSchema)
 
 let channel, connection;
 
-const connectRabbitMQ = async (retries = 5, delay = 3000) => {
+const connectRabbitMQ = async (retries = 10, delay = 3000) => {
 
     while (retries) {
         try {
@@ -35,8 +35,8 @@ const connectRabbitMQ = async (retries = 5, delay = 3000) => {
         } catch (err) {
             retries--;
             if (retries) {
-                console.error(`Failed to connect to RabbitMQ. Retrying in ${delay / 1000} seconds...`, err);
-               await new Promise(res => setTimeout(res, delay));
+                console.error(`Failed to connect to RabbitMQ. ${retries} reminds. Retrying in ${delay / 1000} seconds...`, err);
+                await new Promise(res => setTimeout(res, delay));
             } else {
                 console.error('Failed to connect to RabbitMQ after multiple attempts', err);
             }
@@ -63,6 +63,19 @@ app.post('/tasks', async (req, res) => {
     try {
         const task = new Task({ title, description, userId });
         await task.save();
+
+        const message = {
+            taskId : task._id,
+            title,
+            userId
+        };
+
+        if (!channel) {
+            return res.status(503).json({ error: 'RabbitMQ channel is not available' });
+        }  
+
+        channel.sendToQueue('task_created', Buffer.from(JSON.stringify(message)));
+
         res.status(201).json(task);
     } catch (err) {
         console.error('Error creating task', err);

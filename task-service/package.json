@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "express": "^5.2.1",
-    "mongoose": "^9.0.0"
+    "mongoose": "^9.0.0",
+    "amqplib": "^0.10.9"
   }
 }
